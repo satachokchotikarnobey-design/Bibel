@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>พระคัมภีร์ไบเบิล - ครบถ้วนทุกข้อ (Thai Standard 1971)</title>
+    <title>พระคัมภีร์ไบเบิล - ครบทุกข้อ ทุกบท (Thai Standard 1971)</title>
     <style>
         * {
             margin: 0;
@@ -12,38 +12,38 @@
         }
         body {
             background: #f5f2ec;
-            font-family: 'Sarabun', 'Cordia New', 'Sukhumvit Set', 'Noto Sans Thai', system-ui, serif;
+            font-family: 'Sarabun', 'Cordia New', 'Sukhumvit Set', 'Noto Sans Thai', system-ui, sans-serif;
             color: #2c2a25;
             line-height: 1.55;
-            padding: 1.5rem 1rem;
+            padding: 1rem;
         }
-        .main-container {
+        .app {
             max-width: 1100px;
             margin: 0 auto;
             background: #ffffff;
-            border-radius: 28px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border-radius: 32px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
             overflow: hidden;
             border: 1px solid #e1d8cd;
         }
         header {
             background: #f1ebe2;
-            padding: 1.6rem 2rem;
-            border-bottom: 1px solid #ddd2c2;
+            padding: 1.5rem 2rem;
             text-align: center;
+            border-bottom: 1px solid #ddd2c2;
         }
         header h1 {
-            font-size: 2rem;
+            font-size: 1.9rem;
             font-weight: 500;
             color: #2d4a2d;
         }
-        header .sub {
+        header p {
             font-size: 0.85rem;
             color: #7a6c58;
             margin-top: 0.3rem;
         }
-        .toolbar {
-            background: #ffffff;
+        .controls {
+            background: #fff;
             padding: 1.2rem 2rem;
             display: flex;
             flex-wrap: wrap;
@@ -51,11 +51,11 @@
             align-items: flex-end;
             border-bottom: 1px solid #ece3d9;
         }
-        .field {
+        .ctrl-group {
             flex: 1;
             min-width: 140px;
         }
-        .field label {
+        .ctrl-group label {
             display: block;
             font-size: 0.7rem;
             font-weight: 600;
@@ -66,15 +66,15 @@
         select, button {
             font-family: inherit;
             font-size: 0.9rem;
-            padding: 0.55rem 0.8rem;
-            border-radius: 14px;
+            padding: 0.6rem 0.8rem;
+            border-radius: 16px;
             border: 1px solid #cfc4b4;
             background: #fffefc;
             width: 100%;
+            cursor: pointer;
         }
         button {
             background: #f0ebe2;
-            cursor: pointer;
             font-weight: 500;
             transition: 0.1s;
         }
@@ -82,39 +82,40 @@
             background: #e6ddd1;
             border-color: #b7aa96;
         }
-        .verses-area {
+        .verses-panel {
             padding: 2rem;
-            background: #ffffff;
+            background: #fff;
             min-height: 500px;
         }
-        .verse-card {
+        .verse-item {
             margin-bottom: 1rem;
-            padding: 0.5rem 0.8rem 0.5rem 0;
+            padding-bottom: 0.6rem;
             border-bottom: 1px solid #f0e8df;
             display: flex;
+            gap: 0.8rem;
             align-items: flex-start;
-            gap: 0.6rem;
         }
-        .verse-number {
-            font-weight: 500;
+        .verse-num {
+            font-weight: 600;
             color: #a5825a;
-            min-width: 2.6rem;
-            font-size: 1rem;
+            min-width: 2.5rem;
+            font-size: 0.95rem;
         }
         .verse-text {
             flex: 1;
             font-size: 1rem;
-            color: #2b2721;
+            color: #1e1b16;
         }
-        .loading, .error, .info {
+        .loader, .error-msg, .info-msg {
             text-align: center;
             padding: 2rem;
+            font-size: 1rem;
             color: #8f7a5c;
         }
-        .error {
+        .error-msg {
             color: #b15a3c;
             background: #fff5f0;
-            border-radius: 20px;
+            border-radius: 24px;
         }
         footer {
             background: #f9f7f3;
@@ -125,123 +126,57 @@
             border-top: 1px solid #eae2d6;
         }
         @media (max-width: 700px) {
-            .toolbar, .verses-area { padding: 1rem; }
+            .controls, .verses-panel { padding: 1rem; }
+            .verse-item { gap: 0.4rem; }
         }
     </style>
 </head>
 <body>
-<div class="main-container">
+<div class="app">
     <header>
         <h1>📖 พระคัมภีร์ไบเบิล</h1>
-        <div class="sub">Thai Standard Version 1971 — ทุกข้อ ทุกบท ครบถ้วนสมบูรณ์</div>
+        <p>Thai Standard Version 1971 — พันธสัญญาเดิม + ใหม่ ครบทุกบท ทุกข้อ</p>
     </header>
 
-    <div class="toolbar">
-        <div class="field">
+    <div class="controls">
+        <div class="ctrl-group">
             <label>พันธสัญญา</label>
             <select id="testamentSelect">
                 <option value="ot">เดิม (Old Testament)</option>
                 <option value="nt">ใหม่ (New Testament)</option>
             </select>
         </div>
-        <div class="field">
+        <div class="ctrl-group">
             <label>หนังสือ</label>
             <select id="bookSelect"></select>
         </div>
-        <div class="field">
+        <div class="ctrl-group">
             <label>บทที่</label>
             <select id="chapterSelect"></select>
         </div>
-        <div class="field">
-            <button id="loadBtn">อ่านบทนี้</button>
+        <div class="ctrl-group">
+            <button id="loadBtn">🔍 อ่านบทนี้</button>
         </div>
     </div>
 
-    <div class="verses-area" id="versesContainer">
-        <div class="info">👉 เลือกหนังสือและบท แล้วกด "อ่านบทนี้"</div>
+    <div class="verses-panel" id="versesContainer">
+        <div class="loader">⏳ กำลังโหลดข้อมูลพระคัมภีร์... กรุณารอสักครู่</div>
     </div>
 
-    <footer>ข้อมูลจาก Bible API (bible-api.com) — ฉบับ Thai Standard 1971 • หากโหลดไม่สำเร็จ ให้ลองอีกครั้ง หรือรีเฟรชหน้า</footer>
+    <footer>
+        ข้อมูลพระคัมภีร์จาก <strong>bible-api.com (GitHub mirror)</strong> • ไม่มีปัญหา CORS • ใช้งานออฟไลน์ไม่ได้ (ต้องมีอินเทอร์เน็ต)
+    </footer>
 </div>
 
 <script>
-    // ========== หนังสือในพันธสัญญาเดิม (39 เล่ม) ==========
-    const otBooks = [
-        { th: "ปฐมกาล", en: "Genesis", chapters: 50 },
-        { th: "อพยพ", en: "Exodus", chapters: 40 },
-        { th: "เลวีนิติ", en: "Leviticus", chapters: 27 },
-        { th: "กันดารวิถี", en: "Numbers", chapters: 36 },
-        { th: "เฉลยธรรมบัญญัติ", en: "Deuteronomy", chapters: 34 },
-        { th: "โยชูวา", en: "Joshua", chapters: 24 },
-        { th: "ผู้วินิจฉัย", en: "Judges", chapters: 21 },
-        { th: "นางรูธ", en: "Ruth", chapters: 4 },
-        { th: "1 ซามูเอล", en: "1 Samuel", chapters: 31 },
-        { th: "2 ซามูเอล", en: "2 Samuel", chapters: 24 },
-        { th: "1 พงศ์กษัตริย์", en: "1 Kings", chapters: 22 },
-        { th: "2 พงศ์กษัตริย์", en: "2 Kings", chapters: 25 },
-        { th: "1 พงศาวดาร", en: "1 Chronicles", chapters: 29 },
-        { th: "2 พงศาวดาร", en: "2 Chronicles", chapters: 36 },
-        { th: "เอสรา", en: "Ezra", chapters: 10 },
-        { th: "เนหะมีย์", en: "Nehemiah", chapters: 13 },
-        { th: "เอสเธอร์", en: "Esther", chapters: 10 },
-        { th: "โยบ", en: "Job", chapters: 42 },
-        { th: "สดุดี", en: "Psalms", chapters: 150 },
-        { th: "สุภาษิต", en: "Proverbs", chapters: 31 },
-        { th: "ปัญญาจารย์", en: "Ecclesiastes", chapters: 12 },
-        { th: "เพลงซาโลมอน", en: "Song of Solomon", chapters: 8 },
-        { th: "อิสยาห์", en: "Isaiah", chapters: 66 },
-        { th: "เยเรมีย์", en: "Jeremiah", chapters: 52 },
-        { th: "เพลงคร่ำครวญ", en: "Lamentations", chapters: 5 },
-        { th: "เอเสเคียล", en: "Ezekiel", chapters: 48 },
-        { th: "ดาเนียล", en: "Daniel", chapters: 12 },
-        { th: "โฮเชยา", en: "Hosea", chapters: 14 },
-        { th: "โยเอล", en: "Joel", chapters: 3 },
-        { th: "อาโมส", en: "Amos", chapters: 9 },
-        { th: "โอบาดีห์", en: "Obadiah", chapters: 1 },
-        { th: "โยนาห์", en: "Jonah", chapters: 4 },
-        { th: "มีคาห์", en: "Micah", chapters: 7 },
-        { th: "นาฮูม", en: "Nahum", chapters: 3 },
-        { th: "ฮาบากุก", en: "Habakkuk", chapters: 3 },
-        { th: "เศฟันยาห์", en: "Zephaniah", chapters: 3 },
-        { th: "ฮักกัย", en: "Haggai", chapters: 2 },
-        { th: "เศคาริยาห์", en: "Zechariah", chapters: 14 },
-        { th: "มาลาคี", en: "Malachi", chapters: 4 }
-    ];
+    // --------------------------------------------------------------
+    // ใช้ JSON พระคัมภีร์ Thai Standard 1971 จาก GitHub raw (CORS enabled)
+    // --------------------------------------------------------------
+    const BIBLE_API_URL = 'https://raw.githubusercontent.com/wldeh/bible-api/master/bibles/th-th1971.json';
 
-    // ========== หนังสือในพันธสัญญาใหม่ (27 เล่ม) ==========
-    const ntBooks = [
-        { th: "มัทธิว", en: "Matthew", chapters: 28 },
-        { th: "มาระโก", en: "Mark", chapters: 16 },
-        { th: "ลูกา", en: "Luke", chapters: 24 },
-        { th: "โยฮัน", en: "John", chapters: 21 },
-        { th: "กิจการของอัครทูต", en: "Acts", chapters: 28 },
-        { th: "โรม", en: "Romans", chapters: 16 },
-        { th: "1 โครินธ์", en: "1 Corinthians", chapters: 16 },
-        { th: "2 โครินธ์", en: "2 Corinthians", chapters: 13 },
-        { th: "กาลาเทีย", en: "Galatians", chapters: 6 },
-        { th: "เอเฟซัส", en: "Ephesians", chapters: 6 },
-        { th: "ฟีลิปปี", en: "Philippians", chapters: 4 },
-        { th: "โคโลสี", en: "Colossians", chapters: 4 },
-        { th: "1 เธสะโลนิกา", en: "1 Thessalonians", chapters: 5 },
-        { th: "2 เธสะโลนิกา", en: "2 Thessalonians", chapters: 3 },
-        { th: "1 ทิโมธี", en: "1 Timothy", chapters: 6 },
-        { th: "2 ทิโมธี", en: "2 Timothy", chapters: 4 },
-        { th: "ทิตัส", en: "Titus", chapters: 3 },
-        { th: "ฟีเลโมน", en: "Philemon", chapters: 1 },
-        { th: "ฮีบรู", en: "Hebrews", chapters: 13 },
-        { th: "ยากอบ", en: "James", chapters: 5 },
-        { th: "1 เปโตร", en: "1 Peter", chapters: 5 },
-        { th: "2 เปโตร", en: "2 Peter", chapters: 3 },
-        { th: "1 โยฮัน", en: "1 John", chapters: 5 },
-        { th: "2 โยฮัน", en: "2 John", chapters: 1 },
-        { th: "3 โยฮัน", en: "3 John", chapters: 1 },
-        { th: "ยูดา", en: "Jude", chapters: 1 },
-        { th: "วิวรณ์", en: "Revelation", chapters: 22 }
-    ];
-
-    let currentBooks = [...otBooks];
-    let currentBookIndex = 0;
-    let currentChapter = 1;
+    let fullBible = null;         // เก็บโครงสร้าง { books: [ { name, chapters: [[...]] } ] }
+    let otBooks = [];             // รายชื่อหนังสือ OT
+    let ntBooks = [];             // รายชื่อหนังสือ NT
 
     const testamentSelect = document.getElementById('testamentSelect');
     const bookSelect = document.getElementById('bookSelect');
@@ -249,114 +184,132 @@
     const loadBtn = document.getElementById('loadBtn');
     const versesContainer = document.getElementById('versesContainer');
 
-    function populateBooks() {
-        const testament = testamentSelect.value;
-        currentBooks = (testament === 'ot') ? [...otBooks] : [...ntBooks];
-        bookSelect.innerHTML = '';
-        currentBooks.forEach((book, idx) => {
-            const option = document.createElement('option');
-            option.value = idx;
-            option.textContent = book.th;
-            bookSelect.appendChild(option);
-        });
-        updateChapters();
-    }
-
-    function updateChapters() {
-        const selectedIdx = parseInt(bookSelect.value);
-        if (isNaN(selectedIdx)) return;
-        const book = currentBooks[selectedIdx];
-        if (!book) return;
-        const maxChapters = book.chapters;
-        chapterSelect.innerHTML = '';
-        for (let i = 1; i <= maxChapters; i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = i;
-            chapterSelect.appendChild(option);
-        }
-        // กันค่าเดิมเกิน max
-        let currentVal = parseInt(chapterSelect.value);
-        if (isNaN(currentVal) || currentVal < 1) currentVal = 1;
-        if (currentVal > maxChapters) currentVal = maxChapters;
-        chapterSelect.value = currentVal;
-        currentChapter = currentVal;
-    }
-
-    async function loadChapter() {
-        const bookIdx = parseInt(bookSelect.value);
-        const book = currentBooks[bookIdx];
-        const chapterNum = parseInt(chapterSelect.value);
-        if (!book) {
-            versesContainer.innerHTML = '<div class="error">ไม่พบหนังสือที่เลือก</div>';
-            return;
-        }
-        versesContainer.innerHTML = '<div class="loading">⏳ กำลังโหลดข้อความ... กรุณารอสักครู่</div>';
-        
-        const apiUrl = `https://bible-api.com/${book.en}+${chapterNum}?translation=th1971`;
+    // 1. โหลดข้อมูลพระคัมภีร์ทั้งหมดจาก GitHub
+    async function loadBibleData() {
         try {
-            const response = await fetch(apiUrl);
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status} — ไม่สามารถโหลดข้อมูลได้`);
-            }
+            versesContainer.innerHTML = '<div class="loader">📖 กำลังโหลดพระคัมภีร์ (Thai Standard 1971) ...</div>';
+            const response = await fetch(BIBLE_API_URL);
+            if (!response.ok) throw new Error(`HTTP ${response.status} — โหลดไม่สำเร็จ`);
             const data = await response.json();
-            if (!data.verses || data.verses.length === 0) {
-                throw new Error(`ไม่พบข้อความใน ${book.th} ${chapterNum}`);
-            }
-            renderVerses(data.verses, book.th, chapterNum);
+            fullBible = data;  // { books: [ { name: "ปฐมกาล", chapters: [ [ข้อ1,ข้อ2,...], ... ] } ] }
+            
+            // แยกหนังสือ OT / NT โดยหาตำแหน่งของ "มัทธิว" เป็นจุดตัด
+            const allBooks = fullBible.books;
+            const matthewIndex = allBooks.findIndex(book => book.name === "มัทธิว");
+            otBooks = allBooks.slice(0, matthewIndex);
+            ntBooks = allBooks.slice(matthewIndex);
+            
+            // เติม dropdown หนังสือตามพันธสัญญาที่เลือก
+            populateBooks();
+            // โหลดบทแรกเริ่มต้น (ปฐมกาล บทที่ 1)
+            loadChapter();
         } catch (err) {
             console.error(err);
-            versesContainer.innerHTML = `<div class="error">❌ เกิดข้อผิดพลาด: ${err.message}<br>👉 กรุณาลองอีกครั้ง หรือตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</div>`;
+            versesContainer.innerHTML = `<div class="error-msg">❌ เกิดข้อผิดพลาด: ${err.message}<br>👉 กรุณาตรวจสอบอินเทอร์เน็ต หรือรีเฟรชหน้าใหม่</div>`;
         }
     }
 
-    function renderVerses(verses, bookName, chapterNum) {
-        versesContainer.innerHTML = '';
-        const header = document.createElement('div');
-        header.style.marginBottom = '1.2rem';
-        header.style.fontWeight = '600';
-        header.style.color = '#7d6b53';
-        header.style.borderLeft = '4px solid #b48c5c';
-        header.style.paddingLeft = '0.8rem';
-        header.textContent = `${bookName} ${chapterNum} (Thai Standard 1971) — ${verses.length} ข้อ`;
-        versesContainer.appendChild(header);
+    // เติม dropdown หนังสือตามพันธสัญญา
+    function populateBooks() {
+        const isOT = testamentSelect.value === 'ot';
+        const books = isOT ? otBooks : ntBooks;
+        bookSelect.innerHTML = '';
+        books.forEach((book, idx) => {
+            const option = document.createElement('option');
+            option.value = idx;
+            option.textContent = book.name;
+            bookSelect.appendChild(option);
+        });
+        updateChapterDropdown();
+    }
 
-        for (let i = 0; i < verses.length; i++) {
+    // อัปเดต dropdown บท (จำนวนบทขึ้นอยู่กับหนังสือที่เลือก)
+    function updateChapterDropdown() {
+        const isOT = testamentSelect.value === 'ot';
+        const books = isOT ? otBooks : ntBooks;
+        const bookIdx = parseInt(bookSelect.value);
+        if (isNaN(bookIdx)) return;
+        const book = books[bookIdx];
+        if (!book) return;
+        const numChapters = book.chapters.length;
+        chapterSelect.innerHTML = '';
+        for (let i = 1; i <= numChapters; i++) {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.textContent = i;
+            chapterSelect.appendChild(opt);
+        }
+        chapterSelect.value = 1;  // ค่าเริ่มต้นบทที่ 1
+    }
+
+    // อ่านบทที่เลือกและแสดงผล
+    function loadChapter() {
+        if (!fullBible) {
+            versesContainer.innerHTML = '<div class="error-msg">ยังไม่โหลดข้อมูลพระคัมภีร์เสร็จ กรุณารอสักครู่</div>';
+            return;
+        }
+        const isOT = testamentSelect.value === 'ot';
+        const books = isOT ? otBooks : ntBooks;
+        const bookIdx = parseInt(bookSelect.value);
+        const chapterIdx = parseInt(chapterSelect.value) - 1;  // chapters เป็น array 0-index
+        if (isNaN(bookIdx) || isNaN(chapterIdx)) return;
+        
+        const book = books[bookIdx];
+        if (!book || !book.chapters[chapterIdx]) {
+            versesContainer.innerHTML = `<div class="error-msg">❌ ไม่พบข้อความใน ${book?.name || 'หนังสือ'} บทที่ ${chapterIdx+1}</div>`;
+            return;
+        }
+        
+        const verses = book.chapters[chapterIdx];
+        renderVerses(book.name, chapterIdx+1, verses);
+    }
+
+    function renderVerses(bookName, chapterNum, versesArray) {
+        versesContainer.innerHTML = '';
+        // หัวข้อบท
+        const headerDiv = document.createElement('div');
+        headerDiv.style.marginBottom = '1.2rem';
+        headerDiv.style.fontWeight = '600';
+        headerDiv.style.color = '#7d6b53';
+        headerDiv.style.borderLeft = '4px solid #b48c5c';
+        headerDiv.style.paddingLeft = '0.8rem';
+        headerDiv.textContent = `${bookName} ${chapterNum} — ${versesArray.length} ข้อ`;
+        versesContainer.appendChild(headerDiv);
+        
+        // แสดงแต่ละข้อ
+        for (let i = 0; i < versesArray.length; i++) {
             const verseDiv = document.createElement('div');
-            verseDiv.className = 'verse-card';
-            const numSpan = document.createElement('span');
-            numSpan.className = 'verse-number';
-            numSpan.textContent = verses[i].verse;
-            const textSpan = document.createElement('span');
+            verseDiv.className = 'verse-item';
+            const numSpan = document.createElement('div');
+            numSpan.className = 'verse-num';
+            numSpan.textContent = i+1;
+            const textSpan = document.createElement('div');
             textSpan.className = 'verse-text';
-            textSpan.textContent = verses[i].text;
+            textSpan.textContent = versesArray[i];
             verseDiv.appendChild(numSpan);
             verseDiv.appendChild(textSpan);
             versesContainer.appendChild(verseDiv);
         }
     }
 
-    // Event listeners
+    // --- event listeners ---
     testamentSelect.addEventListener('change', () => {
         populateBooks();
-        loadChapter(); // โหลดบทแรกของพันธสัญญาที่เลือก
+        loadChapter();
     });
     bookSelect.addEventListener('change', () => {
-        updateChapters();
+        updateChapterDropdown();
         loadChapter();
     });
     chapterSelect.addEventListener('change', () => {
-        currentChapter = parseInt(chapterSelect.value);
         loadChapter();
     });
-    loadBtn.addEventListener('click', loadChapter);
-
-    // เริ่มต้นโหลด พันธสัญญาเดิม ปฐมกาล บทที่ 1
-    populateBooks();
-    // รอให้ DOM พร้อมแล้วค่อยโหลดบทแรก
-    setTimeout(() => {
+    loadBtn.addEventListener('click', () => {
         loadChapter();
-    }, 100);
+    });
+
+    // เริ่มต้นโหลดข้อมูลพระคัมภีร์
+    loadBibleData();
 </script>
 </body>
 </html>
