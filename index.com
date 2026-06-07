@@ -1,0 +1,721 @@
+```html
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>The Word of God - พระคัมภีร์ทุกข้อ ทุกบท</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5f2ec;
+            font-family: 'Sarabun', 'Cordia New', 'Sukhumvit Set', 'Noto Sans Thai', system-ui, serif;
+            color: #2c2a25;
+            line-height: 1.55;
+            padding: 1.5rem 1rem;
+        }
+
+        .main-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+            border: 1px solid #e1d8cd;
+        }
+
+        header {
+            background: #f1ebe2;
+            padding: 1.6rem 2rem;
+            border-bottom: 1px solid #ddd2c2;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #2d4a2d;
+            letter-spacing: -0.3px;
+        }
+
+        header .sub {
+            font-size: 0.85rem;
+            color: #7a6c58;
+            margin-top: 0.3rem;
+        }
+
+        /* แถบตั้งค่าตัวอักษร */
+        .typography-bar {
+            background: #fefcf8;
+            padding: 0.7rem 2rem;
+            border-bottom: 1px solid #ece3d9;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .font-control {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .font-control label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #6b5e4c;
+        }
+        .font-control select {
+            padding: 0.3rem 0.6rem;
+            border-radius: 30px;
+            border: 1px solid #cfc4b4;
+            background: white;
+            font-size: 0.85rem;
+        }
+
+        .version-bar {
+            background: #fefcf8;
+            padding: 0.7rem 2rem;
+            border-bottom: 1px solid #ece3d9;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .version-selector {
+            background: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 40px;
+            border: 1px solid #cfc4b4;
+            font-size: 0.85rem;
+            font-family: inherit;
+        }
+
+        .toolbar {
+            background: #ffffff;
+            padding: 1.2rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+            border-bottom: 1px solid #ece3d9;
+        }
+
+        .field {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #9b8e7a;
+            letter-spacing: 0.4px;
+            margin-bottom: 0.25rem;
+        }
+
+        select, button, input {
+            font-family: inherit;
+            font-size: 0.9rem;
+            padding: 0.55rem 0.8rem;
+            border-radius: 14px;
+            border: 1px solid #cfc4b4;
+            background: #fffefc;
+            width: 100%;
+        }
+
+        button {
+            background: #f0ebe2;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.1s;
+        }
+
+        button:hover {
+            background: #e6ddd1;
+            border-color: #b7aa96;
+        }
+
+        .verses-area {
+            padding: 2rem;
+            background: #ffffff;
+            min-height: 500px;
+            transition: all 0.1s ease;
+        }
+
+        /* คลาสควบคุมฟอนต์จะถูกเพิ่มโดย JavaScript */
+        .verse-card {
+            margin-bottom: 1rem;
+            padding: 0.5rem 0.8rem 0.5rem 0;
+            border-bottom: 1px solid #f0e8df;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            transition: background 0.1s;
+            border-radius: 12px;
+        }
+
+        .verse-number {
+            font-weight: 500;
+            color: #a5825a;
+            min-width: 2.6rem;
+            font-size: 1rem; /* เปลี่ยนตาม js */
+            padding-top: 0.1rem;
+        }
+
+        .verse-text {
+            flex: 1;
+            cursor: pointer;
+            padding: 0.2rem 0.4rem;
+            border-radius: 14px;
+            transition: background 0.1s;
+        }
+
+        .verse-text.highlight {
+            background-color: #fff1cc;
+        }
+
+        .verse-actions {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+        }
+
+        .note-btn {
+            background: none;
+            border: none;
+            font-size: 0.75rem;
+            color: #a0825a;
+            cursor: pointer;
+            width: auto;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            font-family: monospace;
+        }
+
+        .note-btn:hover {
+            background: #f3ede5;
+            color: #6b4e2e;
+        }
+
+        .note-preview {
+            font-size: 0.7rem;
+            color: #b88b4b;
+            background: #fef5e8;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #fffef7;
+            padding: 1.8rem;
+            border-radius: 32px;
+            width: 340px;
+            max-width: 90%;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+        }
+
+        .modal-content h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: #3a3228;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 0.7rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .color-chip {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            transition: transform 0.05s;
+        }
+
+        .color-chip:active {
+            transform: scale(0.95);
+        }
+
+        .note-input {
+            width: 100%;
+            padding: 0.6rem;
+            margin: 0.8rem 0;
+            border-radius: 20px;
+            border: 1px solid #ddd2c2;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .loading, .error, .info {
+            text-align: center;
+            padding: 2rem;
+            color: #8f7a5c;
+        }
+
+        .error {
+            color: #b15a3c;
+        }
+
+        footer {
+            background: #f9f7f3;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.7rem;
+            color: #8b826e;
+            border-top: 1px solid #eae2d6;
+        }
+
+        @media (max-width: 700px) {
+            .verse-card {
+                flex-wrap: wrap;
+            }
+            .note-preview {
+                white-space: normal;
+                max-width: 150px;
+            }
+            .toolbar, .verses-area {
+                padding: 1rem;
+            }
+            .typography-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="main-container">
+    <header>
+        <h1>The Word of God</h1>
+        <div class="sub">พระคัมภีร์พันธสัญญาเดิมและใหม่ — ทุกข้อ ทุกบท พร้อมจดบันทึกและเน้นสี</div>
+    </header>
+
+    <!-- แถบเลือกรูปแบบและขนาดอักษร -->
+    <div class="typography-bar">
+        <div class="font-control">
+            <label>แบบอักษร:</label>
+            <select id="fontFamilySelect">
+                <option value="'Sarabun', 'Cordia New', 'Sukhumvit Set', sans-serif">Sarabun (ดีฟอลต์)</option>
+                <option value="'Cordia New', 'Sarabun', 'Sukhumvit Set', sans-serif">Cordia New</option>
+                <option value="'Sukhumvit Set', 'Sarabun', 'Cordia New', sans-serif">Sukhumvit Set</option>
+                <option value="'Noto Sans Thai', 'Sarabun', sans-serif">Noto Sans Thai</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="'Arial', sans-serif">Arial</option>
+            </select>
+        </div>
+        <div class="font-control">
+            <label>ขนาดอักษร:</label>
+            <select id="fontSizeSelect">
+                <option value="14px">14 px</option>
+                <option value="16px" selected>16 px</option>
+                <option value="18px">18 px</option>
+                <option value="20px">20 px</option>
+                <option value="22px">22 px</option>
+                <option value="24px">24 px</option>
+            </select>
+        </div>
+        <div class="font-control">
+            <label>ระยะห่างบรรทัด:</label>
+            <select id="lineHeightSelect">
+                <option value="1.4">1.4</option>
+                <option value="1.55" selected>1.55 (ปกติ)</option>
+                <option value="1.7">1.7</option>
+                <option value="1.9">1.9</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="version-bar">
+        <span style="font-size:0.8rem; color:#6b5e4c;">ฉบับ:</span>
+        <select id="versionSelect" class="version-selector">
+            <option value="ths211">THS211 (Thai Standard 211)</option>
+            <option value="th1971">Thai Standard Version 1971</option>
+            <option value="kjv">King James Version (KJV)</option>
+        </select>
+        <span style="font-size:0.7rem; color:#9b8a72;">คลิกที่ข้อความเพื่อบันทึกโน้ตและเปลี่ยนสี</span>
+    </div>
+
+    <div class="toolbar">
+        <div class="field">
+            <label>พันธสัญญา</label>
+            <select id="testamentSelect">
+                <option value="ot">เดิม (Old Testament)</option>
+                <option value="nt">ใหม่ (New Testament)</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>หนังสือ</label>
+            <select id="bookSelect"></select>
+        </div>
+        <div class="field">
+            <label>บทที่</label>
+            <select id="chapterSelect"></select>
+        </div>
+        <div class="field">
+            <button id="loadBtn">อ่านบทนี้</button>
+        </div>
+    </div>
+
+    <div class="verses-area" id="versesContainer">
+        <div class="info">เลือกหนังสือและบท แล้วกด "อ่านบทนี้"</div>
+    </div>
+
+    <footer>ข้อมูลจาก Bible API • โน้ตและสีถูกบันทึกในเครื่อง (localStorage) • THS211 ใช้ฐานข้อมูล Thai Standard รองรับทุกบท</footer>
+</div>
+
+<div id="noteModal" class="modal">
+    <div class="modal-content">
+        <h4>บันทึกคำอธิบาย / เปลี่ยนสี</h4>
+        <div class="color-options" id="colorOptions"></div>
+        <textarea id="noteTextArea" rows="2" placeholder="จดบันทึก (optional)" class="note-input"></textarea>
+        <div style="display: flex; gap: 0.7rem; margin-top: 1rem;">
+            <button id="saveNoteBtn" style="background:#e0d6c8;">บันทึก</button>
+            <button id="closeModalBtn">ยกเลิก</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ------------------- หนังสือทั้งหมด -------------------
+    const otBooks = [
+        "ปฐมกาล", "อพยพ", "เลวีนิติ", "กันดารวิถี", "เฉลยธรรมบัญญัติ",
+        "โยชูวา", "ผู้วินิจฉัย", "นางรูธ", "1 ซามูเอล", "2 ซามูเอล",
+        "1 พงศ์กษัตริย์", "2 พงศ์กษัตริย์", "1 พงศาวดาร", "2 พงศาวดาร", "เอสรา",
+        "เนหะมีย์", "เอสเธอร์", "โยบ", "สดุดี", "สุภาษิต",
+        "ปัญญาจารย์", "เพลงซาโลมอน", "อิสยาห์", "เยเรมีย์", "เพลงคร่ำครวญ",
+        "เอเสเคียล", "ดาเนียล", "โฮเชยา", "โยเอล", "อาโมส",
+        "โอบาดีห์", "โยนาห์", "มีคาห์", "นาฮูม", "ฮาบากุก",
+        "เศฟันยาห์", "ฮักกัย", "เศคาริยาห์", "มาลาคี"
+    ];
+    const ntBooks = [
+        "มัทธิว", "มาระโก", "ลูกา", "โยฮัน", "กิจการของอัครทูต",
+        "โรม", "1 โครินธ์", "2 โครินธ์", "กาลาเทีย", "เอเฟซัส",
+        "ฟีลิปปี", "โคโลสี", "1 เธสะโลนิกา", "2 เธสะโลนิกา", "1 ทิโมธี",
+        "2 ทิโมธี", "ทิตัส", "ฟีเลโมน", "ฮีบรู", "ยากอบ",
+        "1 เปโตร", "2 เปโตร", "1 โยฮัน", "2 โยฮัน", "3 โยฮัน", "ยูดา", "วิวรณ์"
+    ];
+
+    const bookNameMap = {
+        "ปฐมกาล": "Genesis", "อพยพ": "Exodus", "เลวีนิติ": "Leviticus", "กันดารวิถี": "Numbers", "เฉลยธรรมบัญญัติ": "Deuteronomy",
+        "โยชูวา": "Joshua", "ผู้วินิจฉัย": "Judges", "นางรูธ": "Ruth", "1 ซามูเอล": "1 Samuel", "2 ซามูเอล": "2 Samuel",
+        "1 พงศ์กษัตริย์": "1 Kings", "2 พงศ์กษัตริย์": "2 Kings", "1 พงศาวดาร": "1 Chronicles", "2 พงศาวดาร": "2 Chronicles", "เอสรา": "Ezra",
+        "เนหะมีย์": "Nehemiah", "เอสเธอร์": "Esther", "โยบ": "Job", "สดุดี": "Psalms", "สุภาษิต": "Proverbs",
+        "ปัญญาจารย์": "Ecclesiastes", "เพลงซาโลมอน": "Song of Solomon", "อิสยาห์": "Isaiah", "เยเรมีย์": "Jeremiah", "เพลงคร่ำครวญ": "Lamentations",
+        "เอเสเคียล": "Ezekiel", "ดาเนียล": "Daniel", "โฮเชยา": "Hosea", "โยเอล": "Joel", "อาโมส": "Amos",
+        "โอบาดีห์": "Obadiah", "โยนาห์": "Jonah", "มีคาห์": "Micah", "นาฮูม": "Nahum", "ฮาบากุก": "Habakkuk",
+        "เศฟันยาห์": "Zephaniah", "ฮักกัย": "Haggai", "เศคาริยาห์": "Zechariah", "มาลาคี": "Malachi",
+        "มัทธิว": "Matthew", "มาระโก": "Mark", "ลูกา": "Luke", "โยฮัน": "John", "กิจการของอัครทูต": "Acts",
+        "โรม": "Romans", "1 โครินธ์": "1 Corinthians", "2 โครินธ์": "2 Corinthians", "กาลาเทีย": "Galatians", "เอเฟซัส": "Ephesians",
+        "ฟีลิปปี": "Philippians", "โคโลสี": "Colossians", "1 เธสะโลนิกา": "1 Thessalonians", "2 เธสะโลนิกา": "2 Thessalonians", "1 ทิโมธี": "1 Timothy",
+        "2 ทิโมธี": "2 Timothy", "ทิตัส": "Titus", "ฟีเลโมน": "Philemon", "ฮีบรู": "Hebrews", "ยากอบ": "James",
+        "1 เปโตร": "1 Peter", "2 เปโตร": "2 Peter", "1 โยฮัน": "1 John", "2 โยฮัน": "2 John", "3 โยฮัน": "3 John", "ยูดา": "Jude", "วิวรณ์": "Revelation"
+    };
+
+    let currentBooksList = [...otBooks];
+    let currentBookThai = "ปฐมกาล";
+    let currentChapter = 1;
+    let currentTranslation = "ths211";
+
+    // ------------------- การจัดการฟอนต์และขนาด -------------------
+    function applyTypography() {
+        const fontFamily = localStorage.getItem('bible_fontFamily') || "'Sarabun', 'Cordia New', 'Sukhumvit Set', sans-serif";
+        const fontSize = localStorage.getItem('bible_fontSize') || "16px";
+        const lineHeight = localStorage.getItem('bible_lineHeight') || "1.55";
+        const versesContainer = document.getElementById('versesContainer');
+        if (versesContainer) {
+            versesContainer.style.fontFamily = fontFamily;
+            versesContainer.style.fontSize = fontSize;
+            versesContainer.style.lineHeight = lineHeight;
+        }
+        // ปรับขนาดของ .verse-number ให้สัมพันธ์กัน
+        const style = document.createElement('style');
+        style.id = 'dynamicFontStyle';
+        const oldStyle = document.getElementById('dynamicFontStyle');
+        if (oldStyle) oldStyle.remove();
+        style.id = 'dynamicFontStyle';
+        style.textContent = `.verse-number { font-size: ${fontSize}; } .verse-text { font-size: ${fontSize}; }`;
+        document.head.appendChild(style);
+    }
+
+    function saveTypography() {
+        const fontFamily = document.getElementById('fontFamilySelect').value;
+        const fontSize = document.getElementById('fontSizeSelect').value;
+        const lineHeight = document.getElementById('lineHeightSelect').value;
+        localStorage.setItem('bible_fontFamily', fontFamily);
+        localStorage.setItem('bible_fontSize', fontSize);
+        localStorage.setItem('bible_lineHeight', lineHeight);
+        applyTypography();
+    }
+
+    function loadTypographyToSelects() {
+        const savedFont = localStorage.getItem('bible_fontFamily');
+        const savedSize = localStorage.getItem('bible_fontSize');
+        const savedLine = localStorage.getItem('bible_lineHeight');
+        if (savedFont) document.getElementById('fontFamilySelect').value = savedFont;
+        if (savedSize) document.getElementById('fontSizeSelect').value = savedSize;
+        if (savedLine) document.getElementById('lineHeightSelect').value = savedLine;
+        applyTypography();
+    }
+
+    // ------------------- โน้ตและสี -------------------
+    function getNoteKey(bookThai, chapter, verse) {
+        return `bibleNote_${bookThai}_${chapter}_${verse}`;
+    }
+    function loadNoteForVerse(bookThai, chapter, verse) {
+        const key = getNoteKey(bookThai, chapter, verse);
+        const data = localStorage.getItem(key);
+        if (data) {
+            try { return JSON.parse(data); } catch(e) { return null; }
+        }
+        return null;
+    }
+    function saveNoteForVerse(bookThai, chapter, verse, noteText, colorHex) {
+        const key = getNoteKey(bookThai, chapter, verse);
+        localStorage.setItem(key, JSON.stringify({ note: noteText || "", color: colorHex || null }));
+    }
+
+    const colorPalette = ["#fff1cc", "#e6f0fa", "#e2f4e2", "#ffe0e0", "#f0e6ff", null];
+    const colorNames = ["เหลืองอ่อน", "ฟ้าอ่อน", "เขียวอ่อน", "ชมพูอ่อน", "ม่วงอ่อน", "ไม่มีสี"];
+    let currentEditing = { bookThai: null, chapter: null, verse: null, textSpan: null };
+
+    function openNoteModal(bookThai, chapter, verse, textSpanElement) {
+        const existing = loadNoteForVerse(bookThai, chapter, verse);
+        currentEditing = { bookThai, chapter, verse, textSpan: textSpanElement };
+        document.getElementById("noteTextArea").value = existing?.note || "";
+        const colorContainer = document.getElementById("colorOptions");
+        colorContainer.innerHTML = "";
+        colorPalette.forEach((color, idx) => {
+            const chip = document.createElement("div");
+            chip.className = "color-chip";
+            chip.style.backgroundColor = color || "#f0f0f0";
+            chip.style.border = color ? "1px solid #bbb" : "1px dashed #aaa";
+            chip.title = colorNames[idx];
+            chip.addEventListener("click", () => {
+                if (textSpanElement) {
+                    if (color) {
+                        textSpanElement.style.backgroundColor = color;
+                        textSpanElement.classList.add("highlight");
+                    } else {
+                        textSpanElement.style.backgroundColor = "";
+                        textSpanElement.classList.remove("highlight");
+                    }
+                }
+                const noteText = document.getElementById("noteTextArea").value;
+                saveNoteForVerse(bookThai, chapter, verse, noteText, color);
+                updateNotePreview(bookThai, chapter, verse, noteText, color);
+            });
+            colorContainer.appendChild(chip);
+        });
+        document.getElementById("noteModal").style.display = "flex";
+    }
+
+    function updateNotePreview(bookThai, chapter, verse, noteText, colorHex) {
+        const verseCards = document.querySelectorAll(`.verse-card[data-book="${bookThai}"][data-chapter="${chapter}"][data-verse="${verse}"]`);
+        verseCards.forEach(card => {
+            let previewSpan = card.querySelector(".note-preview");
+            if (noteText && noteText.trim() !== "") {
+                if (!previewSpan) {
+                    const actionsDiv = card.querySelector(".verse-actions");
+                    if (actionsDiv) {
+                        const newPreview = document.createElement("span");
+                        newPreview.className = "note-preview";
+                        newPreview.textContent = noteText.length > 35 ? noteText.slice(0,32)+"..." : noteText;
+                        actionsDiv.appendChild(newPreview);
+                    }
+                } else {
+                    previewSpan.textContent = noteText.length > 35 ? noteText.slice(0,32)+"..." : noteText;
+                }
+            } else {
+                if (previewSpan) previewSpan.remove();
+            }
+            const textSpan = card.querySelector(".verse-text");
+            if (textSpan && colorHex) {
+                textSpan.style.backgroundColor = colorHex;
+                textSpan.classList.add("highlight");
+            } else if (textSpan && !colorHex) {
+                textSpan.style.backgroundColor = "";
+                textSpan.classList.remove("highlight");
+            }
+        });
+    }
+
+    // ------------------- โหลดบทจาก API -------------------
+    function getApiTranslation(versionId) {
+        if (versionId === "ths211") return "th1971";
+        if (versionId === "th1971") return "th1971";
+        return "kjv";
+    }
+
+    async function loadChapter(bookThai, chapterNum, versionId) {
+        const container = document.getElementById("versesContainer");
+        container.innerHTML = '<div class="loading">กำลังโหลดพระคัมภีร์...</div>';
+        const bookEng = bookNameMap[bookThai];
+        if (!bookEng) {
+            container.innerHTML = '<div class="error">ไม่พบหนังสือในระบบ</div>';
+            return;
+        }
+        const translation = getApiTranslation(versionId);
+        try {
+            const url = `https://bible-api.com/${encodeURIComponent(bookEng)}+${chapterNum}?translation=${translation}`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error("HTTP "+response.status);
+            const data = await response.json();
+            if (!data.verses || data.verses.length === 0) throw new Error("ไม่พบข้อความในบทนี้");
+            renderVerses(data.verses, bookThai, chapterNum, versionId);
+            applyTypography(); // รักษาฟอนต์ที่เลือก
+        } catch (err) {
+            container.innerHTML = `<div class="error">เกิดข้อผิดพลาด: ${err.message}<br>อาจไม่มีข้อมูลในบทนี้หรือเวอร์ชันนี้</div>`;
+        }
+    }
+
+    function renderVerses(verses, bookThai, chapterNum, versionId) {
+        const container = document.getElementById("versesContainer");
+        container.innerHTML = "";
+        const headerRef = document.createElement("div");
+        headerRef.style.marginBottom = "1rem";
+        headerRef.style.fontWeight = "500";
+        headerRef.style.color = "#7d6b53";
+        headerRef.style.borderLeft = "3px solid #cfc1aa";
+        headerRef.style.paddingLeft = "0.8rem";
+        const versionLabel = versionId === "ths211" ? "THS211" : (versionId === "th1971" ? "TH1971" : "KJV");
+        headerRef.textContent = `${bookThai} ${chapterNum} (${versionLabel})`;
+        container.appendChild(headerRef);
+
+        for (let v of verses) {
+            const verseDiv = document.createElement("div");
+            verseDiv.className = "verse-card";
+            verseDiv.setAttribute("data-book", bookThai);
+            verseDiv.setAttribute("data-chapter", chapterNum);
+            verseDiv.setAttribute("data-verse", v.verse);
+
+            const numSpan = document.createElement("span");
+            numSpan.className = "verse-number";
+            numSpan.textContent = v.verse;
+
+            const textSpan = document.createElement("span");
+            textSpan.className = "verse-text";
+            textSpan.textContent = v.text;
+            textSpan.addEventListener("click", () => openNoteModal(bookThai, chapterNum, v.verse, textSpan));
+
+            const actionsDiv = document.createElement("div");
+            actionsDiv.className = "verse-actions";
+            const noteBtn = document.createElement("button");
+            noteBtn.textContent = "note";
+            noteBtn.className = "note-btn";
+            noteBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                openNoteModal(bookThai, chapterNum, v.verse, textSpan);
+            });
+            actionsDiv.appendChild(noteBtn);
+
+            const saved = loadNoteForVerse(bookThai, chapterNum, v.verse);
+            if (saved) {
+                if (saved.color) {
+                    textSpan.style.backgroundColor = saved.color;
+                    textSpan.classList.add("highlight");
+                }
+                if (saved.note && saved.note.trim() !== "") {
+                    const previewSpan = document.createElement("span");
+                    previewSpan.className = "note-preview";
+                    previewSpan.textContent = saved.note.length > 35 ? saved.note.slice(0,32)+"..." : saved.note;
+                    actionsDiv.appendChild(previewSpan);
+                }
+            }
+
+            verseDiv.appendChild(numSpan);
+            verseDiv.appendChild(textSpan);
+            verseDiv.appendChild(actionsDiv);
+            container.appendChild(verseDiv);
+        }
+        applyTypography();
+    }
+
+    function populateBooks() {
+        const testament = document.getElementById("testamentSelect").value;
+        currentBooksList = testament === "ot" ? [...otBooks] : [...ntBooks];
+        const bookSelect = document.getElementById("bookSelect");
+        bookSelect.innerHTML = "";
+        currentBooksList.forEach((book, idx) => {
+            const opt = document.createElement("option");
+            opt.value = idx;
+            opt.textContent = book;
+            bookSelect.appendChild(opt);
+        });
+        if (currentBooksList.length) currentBookThai = currentBooksList[0];
+    }
+
+    async function onLoadChapter() {
+        const bookIdx = parseInt(document.getElementById("bookSelect").value);
+        const selectedBookThai = currentBooksList[bookIdx];
+        const chapter = parseInt(document.getElementById("chapterSelect").value);
+        const version = document.getElementById("versionSelect").value;
+        if (!selectedBookThai) return;
+        currentBookThai = selectedBookThai;
+        currentChapter = chapter;
+        currentTranslation = version;
+        await loadChapter(selectedBookThai, chapter, version);
+    }
+
+    // ------------------- Event Listeners และเริ่มต้น -------------------
+    document.getElementById("fontFamilySelect").addEventListener("change", saveTypography);
+    document.getElementById("fontSizeSelect").addEventListener("change", saveTypography);
+    document.getElementById("lineHeightSelect").addEventListener("change", saveTypography);
+    document.getElementById("testamentSelect").addEventListener("change", populateBooks);
+    document.getElementById("loadBtn").addEventListener("click", onLoadChapter);
+    document.getElementById("versionSelect").addEventListener("change", () => {
+        if (currentBookThai && currentChapter) {
+            loadChapter(currentBookThai, currentChapter, document.getElementById("versionSelect").value);
+        }
+    });
+    document.getElementById("closeModalBtn").addEventListener("click", () => {
+        document.getElementById("noteModal").style.display = "none";
+    });
+    document.getElementById("saveNoteBtn").addEventListener("click", () => {
+        const { bookThai, chapter, verse, textSpan } = currentEditing;
+        const noteText = document.getElementById("noteTextArea").value;
+        let currentColor = textSpan ? textSpan.style.backgroundColor : null;
+        if (currentColor && (currentColor === "" || currentColor === "rgba(0, 0, 0, 0)")) currentColor = null;
+        saveNoteForVerse(bookThai, chapter, verse, noteText, currentColor);
+        updateNotePreview(bookThai, chapter, verse, noteText, currentColor);
+        document.getElementById("noteModal").style.display = "none";
+    });
+
+    populateBooks();
+    loadTypographyToSelects();
+    setTimeout(() => {
+        if (currentBooksList.length) loadChapter(currentBooksList[0], 1, "ths211");
+    }, 100);
+</script>
+</body>
+</html>
+```
