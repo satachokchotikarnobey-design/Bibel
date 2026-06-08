@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>📖 พระคัมภีร์ไบเบิล ฉบับสมบูรณ์</title>
+    <title>📖 พระคัมภีร์ไบเบิล ฉบับสมบูรณ์ (Thai Standard 1971)</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         body{background:#f5f2ec;font-family:'Sarabun','Cordia New','Sukhumvit Set','Noto Sans Thai',sans-serif;padding:1rem}
@@ -21,7 +21,7 @@
         .verse-item{margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:1px solid #f0e8df;display:flex;gap:0.8rem}
         .verse-num{font-weight:600;color:#a5825a;min-width:2.5rem}
         .verse-text{flex:1;color:#1e1b16;line-height:1.55}
-        .loader,.error-msg{text-align:center;padding:2rem;color:#8f7a5c}
+        .loader,.error-msg,.info{text-align:center;padding:2rem;color:#8f7a5c}
         .error-msg{color:#b15a3c;background:#fff5f0;border-radius:24px}
         footer{background:#f9f7f3;text-align:center;padding:1rem;font-size:0.7rem;color:#8b826e;border-top:1px solid #eae2d6}
         @media (max-width:700px){.controls,.verses-panel{padding:1rem}}
@@ -31,8 +31,7 @@
 <div class="app">
     <header>
         <h1>📖 พระคัมภีร์ไบเบิล</h1>
-        <p>Thai Standard Version 1971 — พันธสัญญาเดิม 39 เล่ม + ใหม่ 27 เล่ม ครบทุกบท ทุกข้อ</p>
-        <p style="font-size:0.7rem; margin-top:0.2rem;">✅ โหลดครั้งแรก (ครั้งเดียว) ต้องมีอินเทอร์เน็ต ~8MB จากนั้นใช้ได้ทันทีแบบออฟไลน์</p>
+        <p>Thai Standard Version 1971 — ครบทุกบท ทุกข้อ (ออฟไลน์ได้ หลังโหลดครั้งแรก)</p>
     </header>
     <div class="controls">
         <div class="ctrl-group"><label>พันธสัญญา</label><select id="testamentSelect"><option value="ot">เดิม (Old Testament)</option><option value="nt">ใหม่ (New Testament)</option></select></div>
@@ -40,42 +39,64 @@
         <div class="ctrl-group"><label>บทที่</label><select id="chapterSelect"></select></div>
         <div class="ctrl-group"><button id="loadBtn">🔍 อ่านบทนี้</button></div>
     </div>
-    <div class="verses-panel" id="versesContainer"><div class="loader">⏳ กำลังโหลดข้อมูลพระคัมภีร์ (ครั้งแรกครั้งเดียว) กรุณารอสักครู่...</div></div>
-    <footer>ข้อมูลจาก CDN • ถูกเก็บไว้ในเครื่องของคุณ • เปิดครั้งถัดไปไม่ต้องใช้อินเทอร์เน็ต</footer>
+    <div class="verses-panel" id="versesContainer">
+        <div class="loader">⏳ กำลังตรวจสอบข้อมูล...</div>
+    </div>
+    <footer>ข้อมูลจาก CDN • เก็บใน localStorage • โหลดครั้งแรกต้องมีเน็ต ครั้งต่อไปออฟไลน์ได้</footer>
 </div>
 <script>
 (function(){
-    const CACHE_KEY = 'bible_th1971_full';
+    const CACHE_KEY = 'bible_th1971_full_v2';
     const BIBLE_URL = 'https://cdn.jsdelivr.net/gh/wldeh/bible-api@master/bibles/th-th1971.json';
-    let bibleData = null, otBooks = [], ntBooks = [];
+    let bibleData = null;
+    let otBooks = [], ntBooks = [];
+
     const testamentSel = document.getElementById('testamentSelect');
     const bookSel = document.getElementById('bookSelect');
     const chapterSel = document.getElementById('chapterSelect');
     const loadBtn = document.getElementById('loadBtn');
     const versesDiv = document.getElementById('versesContainer');
 
-    async function loadData() {
+    async function loadOrUseCache() {
         const cached = localStorage.getItem(CACHE_KEY);
         if (cached) {
-            try { bibleData = JSON.parse(cached); init(); return; } catch(e) {}
+            try {
+                bibleData = JSON.parse(cached);
+                console.log('ใช้ข้อมูลจาก cache');
+                finalizeInit();
+                return;
+            } catch(e) { console.warn(e); }
         }
+        // โหลดจากเน็ตครั้งแรก
+        versesDiv.innerHTML = '<div class="loader">📥 กำลังโหลดพระคัมภีร์ (ครั้งแรก ต้องเชื่อมต่ออินเทอร์เน็ต) กรุณารอ...</div>';
         try {
-            versesDiv.innerHTML = '<div class="loader">📥 กำลังดาวน์โหลดพระคัมภีร์ (8MB) กรุณารอ...</div>';
             const resp = await fetch(BIBLE_URL);
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            bibleData = await resp.json();
-            localStorage.setItem(CACHE_KEY, JSON.stringify(bibleData));
-            init();
+            const data = await resp.json();
+            bibleData = data;
+            localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+            finalizeInit();
         } catch(err) {
-            versesDiv.innerHTML = `<div class="error-msg">❌ โหลดไม่สำเร็จ: ${err.message}<br>👉 ตรวจสอบอินเทอร์เน็ตแล้วรีเฟรชหน้า</div>`;
+            versesDiv.innerHTML = `<div class="error-msg">❌ โหลดไม่สำเร็จ: ${err.message}<br>👉 ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต แล้วรีเฟรช</div>`;
         }
     }
 
-    function init() {
+    function finalizeInit() {
+        // ตรวจสอบโครงสร้าง data
+        if (!bibleData || !bibleData.books || !bibleData.books.length) {
+            versesDiv.innerHTML = '<div class="error-msg">ข้อมูลพระคัมภีร์ไม่ถูกต้อง</div>';
+            return;
+        }
         const allBooks = bibleData.books;
-        const mtIndex = allBooks.findIndex(b => b.name === "มัทธิว");
-        otBooks = allBooks.slice(0, mtIndex);
-        ntBooks = allBooks.slice(mtIndex);
+        const matthewIndex = allBooks.findIndex(b => b.name === "มัทธิว");
+        if (matthewIndex === -1) {
+            // fallback: ถ้าหาไม่เจอให้แบ่งครึ่ง (แต่ปกติเจอ)
+            otBooks = allBooks.slice(0, 39);
+            ntBooks = allBooks.slice(39);
+        } else {
+            otBooks = allBooks.slice(0, matthewIndex);
+            ntBooks = allBooks.slice(matthewIndex);
+        }
         populateBooks();
         loadChapter();
     }
@@ -90,44 +111,56 @@
             opt.textContent = book.name;
             bookSel.appendChild(opt);
         });
-        updateChapters();
+        updateChapterDropdown();
     }
 
-    function updateChapters() {
+    function updateChapterDropdown() {
         const isOT = testamentSel.value === 'ot';
         const books = isOT ? otBooks : ntBooks;
         const idx = parseInt(bookSel.value);
-        if (isNaN(idx)) return;
+        if (isNaN(idx) || !books[idx]) return;
         const book = books[idx];
-        if (!book) return;
-        const total = book.chapters.length;
+        const totalCh = book.chapters.length;
         chapterSel.innerHTML = '';
-        for (let i=1; i<=total; i++) {
+        for (let i=1; i<=totalCh; i++) {
             const opt = document.createElement('option');
             opt.value = i;
             opt.textContent = i;
             chapterSel.appendChild(opt);
         }
-        chapterSel.value = 1;
+        if (chapterSel.options.length) chapterSel.value = 1;
+        else chapterSel.innerHTML = '<option value="1">1</option>';
     }
 
     function loadChapter() {
-        if (!bibleData) return;
+        if (!bibleData) {
+            versesDiv.innerHTML = '<div class="loader">กำลังเตรียมข้อมูล...</div>';
+            return;
+        }
         const isOT = testamentSel.value === 'ot';
         const books = isOT ? otBooks : ntBooks;
         const bookIdx = parseInt(bookSel.value);
-        const chapIdx = parseInt(chapterSel.value) - 1;
-        if (isNaN(bookIdx) || isNaN(chapIdx)) return;
+        const chapterNum = parseInt(chapterSel.value);
+        if (isNaN(bookIdx) || isNaN(chapterNum)) return;
         const book = books[bookIdx];
-        if (!book || !book.chapters[chapIdx]) {
-            versesDiv.innerHTML = `<div class="error-msg">❌ ไม่พบข้อความในบทนี้</div>`;
+        if (!book) {
+            versesDiv.innerHTML = `<div class="error-msg">ไม่พบหนังสือที่เลือก</div>`;
             return;
         }
-        const verses = book.chapters[chapIdx];
-        renderVerses(book.name, chapIdx+1, verses);
+        const chapterIndex = chapterNum - 1;
+        if (chapterIndex < 0 || chapterIndex >= book.chapters.length) {
+            versesDiv.innerHTML = `<div class="error-msg">ไม่พบข้อความใน ${book.name} บทที่ ${chapterNum} (มีเพียง ${book.chapters.length} บท)</div>`;
+            return;
+        }
+        const verses = book.chapters[chapterIndex];
+        if (!verses || verses.length === 0) {
+            versesDiv.innerHTML = `<div class="error-msg">บทที่ ${chapterNum} ไม่มีข้อความ (ว่างเปล่า)</div>`;
+            return;
+        }
+        renderVerses(book.name, chapterNum, verses);
     }
 
-    function renderVerses(name, chap, versesArr) {
+    function renderVerses(bookName, chapterNum, versesArr) {
         versesDiv.innerHTML = '';
         const header = document.createElement('div');
         header.style.marginBottom = '1.2rem';
@@ -135,7 +168,7 @@
         header.style.color = '#7d6b53';
         header.style.borderLeft = '4px solid #b48c5c';
         header.style.paddingLeft = '0.8rem';
-        header.textContent = `${name} ${chap} — ${versesArr.length} ข้อ`;
+        header.textContent = `${bookName} ${chapterNum} — ${versesArr.length} ข้อ`;
         versesDiv.appendChild(header);
         for (let i=0; i<versesArr.length; i++) {
             const div = document.createElement('div');
@@ -153,10 +186,11 @@
     }
 
     testamentSel.addEventListener('change', () => { populateBooks(); loadChapter(); });
-    bookSel.addEventListener('change', () => { updateChapters(); loadChapter(); });
+    bookSel.addEventListener('change', () => { updateChapterDropdown(); loadChapter(); });
     chapterSel.addEventListener('change', () => { loadChapter(); });
     loadBtn.addEventListener('click', loadChapter);
-    loadData();
+
+    loadOrUseCache();
 })();
 </script>
 </body>
